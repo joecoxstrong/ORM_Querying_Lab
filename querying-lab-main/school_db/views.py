@@ -1,3 +1,4 @@
+from inspect import istraceback
 from django.shortcuts import render
 from django.db.models import Count
 from django.core.exceptions import ObjectDoesNotExist
@@ -58,8 +59,9 @@ SELECT `school_db_student`.`id`,
 # Order the data by highest GPAs first (descending).
 # Print out each student's full name and gpa to the terminal
 def problem_one(request):
-
-
+    smart_kids = Student.objects.filter(gpa__gt = 3).order_by('-gpa')
+    for student in smart_kids:
+        print(f'Full Name: {student.first_name} {student.last_name} GPA: {student.gpa} ')
 
     return complete(request)
 
@@ -99,7 +101,9 @@ SELECT `school_db_student`.`id`,
 # Order by hire date ascending
 # Print out the instructor's full name and hire date to the terminal
 def problem_two(request):
-
+    tenured_instructors = Instructor.objects.filter(hire_date__year__lt = 2010).order_by('hire_date')
+    for instructor in tenured_instructors:
+      print(f'Full Name: {instructor.first_name} {instructor.last_name} \nHire Date: {instructor.hire_date}')
 
 
     return complete(request)
@@ -139,7 +143,12 @@ SELECT `school_db_instructor`.`id`,
 # Print the instructors name and courses that he belongs to in the terminal 
 # (Do not hard code his name in the print)
 def problem_three(request):
-
+    number_twos_courses = Course.objects.filter(instructor_id = 2)
+    instructor_name = Instructor.objects.get(pk = 2)
+    print(f'Instructor Name: {instructor_name.first_name} {instructor_name.last_name}')
+    print('Courses:')
+    for courses in number_twos_courses:
+      print(f'-{courses.name}')
 
 
     return complete(request)
@@ -187,7 +196,12 @@ SELECT `school_db_instructor`.`id`,
 
 # Get the count of students, courses, and instructors and print them in the terminal
 def problem_four(request):
-
+    count_students = Student.objects.count()
+    count_courses = Course.objects.count()
+    count_instructors = Instructor.objects.count()
+    print(f'Students Count: {count_students}')
+    print(f'Courses Count: {count_courses}')
+    print(f'Instructors Count: {count_instructors}')
 
 
     return complete(request)
@@ -233,7 +247,9 @@ SELECT COUNT(*) AS `__count`
 # Print the new student's id, full name, year, and gpa to the terminal
 # NOTE every time you execute this function a duplicate student will be created with a different primary key number
 def problem_five(request):
-
+    student = Student.objects.create(first_name = 'Joey', last_name = 'Vega', year = 2022, gpa = 1.3)
+    jj= Student.objects.get(first_name = 'Joey')
+    print(F'Id: {student.id}\nStudent full name: {student.first_name} {student.last_name}\nYear: {student.year}\nGPA: {student.gpa}')
 
 
     return complete(request)
@@ -270,7 +286,9 @@ def problem_six(request):
     
     # Make sure to set this equal to the primary key of the row you just created!
     student_id = 11
-
+    student = Student.objects.filter(id = 11).update(gpa = 1.1)
+    grounded_jj = Student.objects.get(id = 11)
+    print(f'ID: {grounded_jj.id}\nFull name: {grounded_jj.first_name} {grounded_jj.last_name}\nGPA: {grounded_jj.gpa}')
 
 
     return complete(request)
@@ -319,7 +337,7 @@ def problem_seven(request):
 
     # Make sure to set this equal to the primary key of the row you just created!
     student_id = 11
-
+    student = Student.objects.filter(id = 11).delete()
 
     try:
         student = Student.objects.get(pk=student_id)
@@ -376,7 +394,9 @@ SELECT `school_db_student`.`id`,
 # Find all of the instructors that only belong to a single course
 # Print out the instructors full name and number of courses to the console
 def bonus_problem(request):
-
+    count_courses = Course.objects.all()
+    for count_courses in count_courses:
+      print(count_courses.instructor_id)
 
 
     return complete(request)
